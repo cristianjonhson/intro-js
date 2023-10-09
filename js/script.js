@@ -39,21 +39,27 @@ function calcularCosto() {
             break;
         }
 
-        const cantidad = parseInt(prompt("Ingrese la cantidad:"));
-        let costoTotal = 0;
+        const cantidadInput = prompt("Ingrese la cantidad:");
+        // Usar el método replace para eliminar caracteres no numéricos
+        const cantidad = parseInt(cantidadInput.replace(/\D/g, ''));
 
-        const opcion = parseInt(seleccion);
-        if (!isNaN(opcion) && opcion >= 1 && opcion <= productos.length + servicios.length) {
-            if (opcion <= productos.length) {
-                const precioSinIva = productos[opcion - 1].precio;
-                costoTotal = (precioSinIva + precioSinIva * iva) * cantidad;
+        if (!isNaN(cantidad)) {
+            let costoTotal = 0;
+            const opcion = parseInt(seleccion);
+            if (!isNaN(opcion) && opcion >= 1 && opcion <= productos.length + servicios.length) {
+                if (opcion <= productos.length) {
+                    const precioSinIva = productos[opcion - 1].precio;
+                    costoTotal = (precioSinIva + precioSinIva * iva) * cantidad;
+                } else {
+                    const precioSinIva = servicios[opcion - productos.length - 1].precio;
+                    costoTotal = (precioSinIva + precioSinIva * iva) * cantidad;
+                }
+                alert(`El costo total (con IVA) es: $${costoTotal}`);
             } else {
-                const precioSinIva = servicios[opcion - productos.length - 1].precio;
-                costoTotal = (precioSinIva + precioSinIva * iva) * cantidad;
+                alert("Opción no válida.");
             }
-            alert(`El costo total (con IVA) es: $${costoTotal}`);
         } else {
-            alert("Opción no válida.");
+            alert("Cantidad no válida. Ingrese un número válido.");
         }
     }
 }
