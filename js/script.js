@@ -26,13 +26,15 @@ function calcularCosto() {
     const iva = 0.19;
 
     while (true) {
-        const seleccion = prompt(
+        const seleccionInput = prompt(
             "Seleccione un producto o servicio:\n" +
             productos.map((producto, index) => `${index + 1} - ${producto.nombre} ($${producto.precio})`).join("\n") +
             "\n" +
             servicios.map((servicio, index) => `${productos.length + index + 1} - ${servicio.nombre} ($${servicio.precio})`).join("\n") +
             "\nPara salir, escriba 'salir'"
         );
+
+        const seleccion = seleccionInput.replace(/\D/g, '');
 
         if (seleccion.toLowerCase() === "salir") {
             alert("Gracias por usar el simulador.");
@@ -56,7 +58,7 @@ function calcularCosto() {
                 }
                 alert(`El costo total (con IVA) es: $${costoTotal}`);
             } else {
-                alert("Opción no válida.");
+                alert("Opción no válida. Ingrese un número válido.");
             }
         } else {
             alert("Cantidad no válida. Ingrese un número válido.");
