@@ -34,7 +34,7 @@ function calcularCosto() {
             "\nPara salir, escriba 'salir'"
         );
 
-        const seleccion = seleccionInput.replace(/\D/g, '');
+        const seleccion = seleccionInput.trim().replace(/\D/g, '');
 
         if (seleccion.toLowerCase() === "salir") {
             alert("Gracias por usar el simulador.");
@@ -42,8 +42,8 @@ function calcularCosto() {
         }
 
         const cantidadInput = prompt("Ingrese la cantidad:");
-        // Usar el método replace para eliminar caracteres no numéricos
-        const cantidad = parseInt(cantidadInput.replace(/\D/g, ''));
+        // Usar el método replace para eliminar caracteres no numéricos y el trim para eliminar espacios en blancos
+        const cantidad = parseInt(cantidadInput.trim().replace(/\D/g, ''));
 
         if (!isNaN(cantidad)) {
             let costoTotal = 0;
