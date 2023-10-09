@@ -23,6 +23,8 @@ function calcularCosto() {
         },
     ];
 
+    const iva = 0.19;
+
     while (true) {
         const seleccion = prompt(
             "Seleccione un producto o servicio:\n" +
@@ -43,11 +45,13 @@ function calcularCosto() {
         const opcion = parseInt(seleccion);
         if (!isNaN(opcion) && opcion >= 1 && opcion <= productos.length + servicios.length) {
             if (opcion <= productos.length) {
-                costoTotal = productos[opcion - 1].precio * cantidad;
+                const precioSinIva = productos[opcion - 1].precio;
+                costoTotal = (precioSinIva + precioSinIva * iva) * cantidad;
             } else {
-                costoTotal = servicios[opcion - productos.length - 1].precio * cantidad;
+                const precioSinIva = servicios[opcion - productos.length - 1].precio;
+                costoTotal = (precioSinIva + precioSinIva * iva) * cantidad;
             }
-            alert(`El costo total es: $${costoTotal}`);
+            alert(`El costo total (con IVA) es: $${costoTotal}`);
         } else {
             alert("Opción no válida.");
         }
