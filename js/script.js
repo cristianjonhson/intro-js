@@ -1,25 +1,25 @@
 function calcularCosto() {
     const productos = [{
             nombre: "Producto 1",
-            precio: 10
+            precio: 10000
         },
         {
             nombre: "Producto 2",
-            precio: 20
+            precio: 20000
         },
         {
             nombre: "Producto 3",
-            precio: 15
+            precio: 15000
         },
     ];
 
     const servicios = [{
             nombre: "Servicio 1",
-            precio: 30
+            precio: 30000
         },
         {
             nombre: "Servicio 2",
-            precio: 25
+            precio: 25000
         },
     ];
 
