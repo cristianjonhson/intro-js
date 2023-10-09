@@ -1,36 +1,68 @@
 function calcularCosto() {
+    const productos = [{
+            nombre: "Producto 1",
+            precio: 10000
+        },
+        {
+            nombre: "Producto 2",
+            precio: 20000
+        },
+        {
+            nombre: "Producto 3",
+            precio: 15000
+        },
+    ];
+
+    const servicios = [{
+            nombre: "Servicio 1",
+            precio: 30000
+        },
+        {
+            nombre: "Servicio 2",
+            precio: 25000
+        },
+    ];
+
+    const iva = 0.19;
+
     while (true) {
-        const producto = prompt("Seleccione un producto o servicio:\n1 - Producto 1 ($10)\n2 - Producto 2 ($20)\n3 - Producto 3 ($15)\n4 - Servicio 1 ($30)\n5 - Servicio 2 ($25)\n\nPara salir, escriba 'salir'");
-        if (producto.toLowerCase() === 'salir') {
+        const seleccionInput = prompt(
+            "Seleccione un producto o servicio:\n" +
+            productos.map((producto, index) => `${index + 1} - ${producto.nombre} ($${producto.precio})`).join("\n") +
+            "\n" +
+            servicios.map((servicio, index) => `${productos.length + index + 1} - ${servicio.nombre} ($${servicio.precio})`).join("\n") +
+            "\nPara salir, escriba 'salir'"
+        );
+
+        const seleccion = seleccionInput.trim().replace(/\D/g, '');
+
+        if (seleccion.toLowerCase() === "salir") {
             alert("Gracias por usar el simulador.");
-            break; // Salir del bucle si el usuario escribe 'salir'
-        }
-        const cantidad = parseInt(prompt("Ingrese la cantidad:"));
-        let costoTotal = 0;
-
-        // Aplicar un condicional para calcular el costo total según la selección
-        switch (producto) {
-            case "1":
-                costoTotal = 10 * cantidad;
-                break;
-            case "2":
-                costoTotal = 20 * cantidad;
-                break;
-            case "3":
-                costoTotal = 15 * cantidad;
-                break;
-            case "4":
-                costoTotal = 30 * cantidad;
-                break;
-            case "5":
-                costoTotal = 25 * cantidad;
-                break;
-            default:
-                alert("Opción no válida.");
-                continue; // Volver al inicio del bucle si la opción no es válida
+            break;
         }
 
-        alert(`El costo total es: $${costoTotal}`);
+        const cantidadInput = prompt("Ingrese la cantidad:");
+        // Usar el método replace para eliminar caracteres no numéricos y el trim para eliminar espacios en blancos
+        const cantidad = parseInt(cantidadInput.trim().replace(/\D/g, ''));
+
+        if (!isNaN(cantidad)) {
+            let costoTotal = 0;
+            const opcion = parseInt(seleccion);
+            if (!isNaN(opcion) && opcion >= 1 && opcion <= productos.length + servicios.length) {
+                if (opcion <= productos.length) {
+                    const precioSinIva = productos[opcion - 1].precio;
+                    costoTotal = (precioSinIva + precioSinIva * iva) * cantidad;
+                } else {
+                    const precioSinIva = servicios[opcion - productos.length - 1].precio;
+                    costoTotal = (precioSinIva + precioSinIva * iva) * cantidad;
+                }
+                alert(`El costo total (con IVA) es: $${costoTotal}`);
+            } else {
+                alert("Opción no válida. Ingrese un número válido.");
+            }
+        } else {
+            alert("Cantidad no válida. Ingrese un número válido.");
+        }
     }
 }
 
