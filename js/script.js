@@ -66,4 +66,18 @@ function calcularCosto() {
     }
 }
 
-calcularCosto(); // Llamada automática al cargar la página
+  
+  // Esperar a que el documento HTML se cargue completamente
+  document.addEventListener("DOMContentLoaded", function () {
+    // Obtener el botón por su ID
+    const calcularButton = document.createElement("button");
+    calcularButton.textContent = "Calcular Costo";
+    
+    // Agregar un evento de clic al botón
+    calcularButton.addEventListener("click", calcularCosto);
+    
+    // Agregar el botón al cuerpo del documento
+    document.body.appendChild(calcularButton);
+  });
+  
+
