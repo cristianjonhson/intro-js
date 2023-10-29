@@ -1,19 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Simulador de Costo</title>
   </head>
   <body>
     <h1>Simulador de Costo de Productos y Servicios</h1>
-    <ul id="listaProductos"></ul>
-    <ul id="listaServicios"></ul>
-    <ul id="listaSeleccionados"></ul>
-    <p id="iva"></p>
-    <p id="resultado"></p>
-   <br />
-    <script src="js/script.js"></script>
-</body>
-</html>
+    <div id="listaProductos">
+      <h2>Productos</h2>
+    </div>
+    <div id="listaServicios">
+      <h2>Servicios</h2>
+    </div>
+    <div>
+      <h2>Selecciones</h2>
+      <ul id="listaSeleccionados"></ul>
+      <label id="producto-1-label"></label>
+      <label id="producto-2-label"></label>
+      <label id="producto-3-label"></label>
+      <label id="servicio-1-label"></label>
+      <label id="servicio-2-label"></label>
+    </div>
 
+    <div>
+      <h2>Calculo</h2>
+      <p id="iva">IVA 19%: $0</p>
+      <p id="resultado">Resultados:</p>
+    </div>
+    <br />
+    <script src="js/script.js"></script>
+  </body>
+</html>
