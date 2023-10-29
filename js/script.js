@@ -27,6 +27,20 @@ function calcularCosto() {
   
     const iva = 0.19;
   
+    // Array de mensajes de bienvenida aleatorios
+    const mensajesBienvenida = [
+      "¡Bienvenido al Simulador de Costo!",
+      "Hola, ¿en qué puedo ayudarte hoy?",
+      "Bienvenido, comencemos a calcular costos.",
+    ];
+  
+    // Mostrar un mensaje de bienvenida aleatorio
+    const mensajeBienvenida = mensajesBienvenida[Math.floor(Math.random() * mensajesBienvenida.length)];
+    alert(mensajeBienvenida);
+  
+    let montoIngresado = false; // Variable para rastrear si se ha ingresado un monto
+    let resultadoElement = document.getElementById("resultado");
+  
     while (true) {
       const seleccionInput = prompt(
         "Seleccione un producto o servicio:\n" +
@@ -45,12 +59,15 @@ function calcularCosto() {
                 })`
             )
             .join("\n") +
-          "\nPara salir, escriba 'salir'"
+          "\nSi termino de calcular, escriba 'salir'"
       );
   
-      const seleccion = seleccionInput.trim();
+      const seleccion = seleccionInput ? seleccionInput.trim() : "";
   
       if (seleccion.toLowerCase() === "salir") {
+        if (!montoIngresado) {
+          resultadoElement.textContent = "No se ha realizado ningún cálculo.";
+        }
         alert("Gracias por usar el simulador.");
         break;
       }
@@ -73,9 +90,9 @@ function calcularCosto() {
             const precioSinIva = servicios[opcion - productos.length - 1].precio;
             costoTotal = (precioSinIva + precioSinIva * iva) * cantidad;
           }
-          // Mostrar el resultado en el elemento con id "resultado"
-          const resultadoElement = document.getElementById("resultado");
           resultadoElement.textContent = `El costo total (con IVA) es: $${costoTotal}`;
+          // Indicar que se ha ingresado un monto
+          montoIngresado = true;
         } else {
           alert("Opción no válida. Ingrese un número válido.");
         }
@@ -90,13 +107,13 @@ function calcularCosto() {
     // Obtener el botón por su ID
     const calcularButton = document.createElement("button");
     calcularButton.textContent = "Calcular Costo";
-  
+      
     // Agregar un evento de clic al botón
     calcularButton.addEventListener("click", calcularCosto);
   
     // Agregar el botón al cuerpo del documento
     document.body.appendChild(calcularButton);
-  });
+    });
   
   // Capturar la tecla "Enter" en el campo de entrada de cantidad
   document.addEventListener("keydown", function (event) {
