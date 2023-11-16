@@ -24,221 +24,136 @@ const servicios = [
   },
 ];
 
-function mostrarProductosServicios() {
-    // Suponiendo que tienes elementos en tu HTML con los IDs "listaProductos" y "listaServicios"
-    const listaProductosElement = document.getElementById("listaProductos");
-    const listaServiciosElement = document.getElementById("listaServicios");
-    const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
-    // Recorremos el array de productos y servicios y los convertimos en elementos HTML
-    productos.forEach((producto, index) => {
-        const input = document.createElement("input");
-        input.type = "checkbox";
-        input.name = "productos";
-        input.value = `producto-${index}`;
-        input.id = `producto-${index}`;
+function agregarAListaSeleccionados(nombre, precio, cantidad, listaSeleccionadosElement) {
+  // Buscar si ya existe un elemento con el mismo nombre en la lista
+  const listItem = Array.from(listaSeleccionadosElement.children).find(
+    (element) => element.dataset.nombre === nombre
+  );
 
-        const label = document.createElement("label");
-        label.textContent = `${producto.nombre} - $${producto.precio}`;
-        label.htmlFor = input.id;
+  if (listItem) {
+    // Si ya existe, actualizar la cantidad y el subtotal
+    const cantidadInput = listItem.querySelector("input");
+    cantidadInput.value = cantidad;
+    listItem.textContent = `${nombre} - Cantidad: ${cantidad} - Subtotal: $${cantidad * precio}`;
+  } else {
+    // Si no existe, crear un nuevo elemento
+    const newItem = document.createElement("li");
+    newItem.dataset.nombre = nombre;
 
-        // Agregar un evento para actualizar el `listaSeleccionados` cuando se cambie la selección del checkbox
-        input.addEventListener("change", () => {
-            const seleccionElement = document.getElementById(`seleccion-${input.id}`);
-            if (input.checked) {
-                const listItem = document.createElement("li");
-                listItem.textContent = `${producto.nombre} - $${producto.precio}`;
-                listItem.id = `seleccion-${input.id}`;
-                listaSeleccionadosElement.appendChild(listItem);
-            } else {
-                const listItem = document.getElementById(`seleccion-${input.id}`);
-                if (listItem) {
-                    listaSeleccionadosElement.removeChild(listItem);
-                }
-            }
-        });
-
-        listaProductosElement.appendChild(input);
-        listaProductosElement.appendChild(label);
-    });
-
-    servicios.forEach((servicio, index) => {
-        const input = document.createElement("input");
-        input.type = "checkbox";
-        input.name = "servicios";
-        input.value = `servicio-${index}`;
-        input.id = `servicio-${index}`;
-
-        const label = document.createElement("label");
-        label.textContent = `${servicio.nombre} - $${servicio.precio}`;
-        label.htmlFor = input.id;
-
-        // Agregar un evento para actualizar el `listaSeleccionados` cuando se cambie la selección del checkbox
-        input.addEventListener("change", () => {
-            const seleccionElement = document.getElementById(`seleccion-${input.id}`);
-            if (input.checked) {
-                const listItem = document.createElement("li");
-                listItem.textContent = `${servicio.nombre} - $${servicio.precio}`;
-                listItem.id = `seleccion-${input.id}`;
-                listaSeleccionadosElement.appendChild(listItem);
-            } else {
-                const listItem = document.getElementById(`seleccion-${input.id}`);
-                if (listItem) {
-                    listaSeleccionadosElement.removeChild(listItem);
-                }
-            }
-        });
-
-        listaServiciosElement.appendChild(input);
-        listaServiciosElement.appendChild(label);
-    });
-}
-
-
-  
-
-function calcularCosto() {
-  const iva = 0.19;
-  const seleccionados = {}; // Objeto para rastrear las selecciones y cantidades
-
-  // Array de mensajes de bienvenida aleatorios
-  const mensajesBienvenida = [
-    "¡Bienvenido al Simulador de Costo!",
-    "Hola, ¿en qué puedo ayudarte hoy?",
-    "Bienvenido, comencemos a calcular costos.",
-  ];
-
-  // Mostrar un mensaje de bienvenida aleatorio
-  const mensajeBienvenida =
-    mensajesBienvenida[Math.floor(Math.random() * mensajesBienvenida.length)];
-  alert(mensajeBienvenida);
-
-  let montoIngresado = false; // Variable para rastrear si se ha ingresado un monto
-  let resultadoElement = document.getElementById("resultado");
-  let ivaElement = document.getElementById("iva");
-
-  while (true) {
-    const seleccionInput = prompt(
-      "Seleccione un producto o servicio:\n" +
-        productos
-          .map(
-            (producto, index) =>
-              `${index + 1} - ${producto.nombre} ($${producto.precio})`
-          )
-          .join("\n") +
-        "\n" +
-        servicios
-          .map(
-            (servicio, index) =>
-              `${productos.length + index + 1} - ${servicio.nombre} ($$${
-                servicio.precio
-              })`
-          )
-          .join("\n") +
-        "\nSi termino de calcular, escriba 'salir'"
-    );
-
-    const seleccion = seleccionInput ? seleccionInput.trim() : "";
-
-    if (seleccion.toLowerCase() === "salir") {
-      if (!montoIngresado) {
-        resultadoElement.textContent = "No se ha realizado ningún cálculo.";
-      }
-      alert("Gracias por usar el simulador.");
-      break;
-    }
-
-    const cantidadInput = prompt("Ingrese la cantidad:");
-    const cantidad = parseInt(cantidadInput.trim().replace(/\D/g, ""));
-
-    if (!isNaN(cantidad)) {
-      let costoTotal = 0;
-      const opcion = parseInt(seleccion);
-      if (
-        !isNaN(opcion) &&
-        opcion >= 1 &&
-        opcion <= productos.length + servicios.length
-      ) {
-        if (opcion <= productos.length) {
-          const producto = productos[opcion - 1];
-          const seleccionActual = seleccionados[producto.nombre];
-          if (seleccionActual) {
-            seleccionados[producto.nombre].cantidad += cantidad;
-          } else {
-            seleccionados[producto.nombre] = {
-              precio: producto.precio,
-              cantidad,
-            };
-          }
-          const precioSinIva = productos[opcion - 1].precio;
-          costoTotal = (precioSinIva + precioSinIva * iva) * cantidad;
-          ivaprecio = precioSinIva * iva * cantidad;
-        } else {
-          const precioSinIva = servicios[opcion - productos.length - 1].precio;
-          costoTotal = (precioSinIva + precioSinIva * iva) * cantidad;
-          const servicio = servicios[opcion - productos.length - 1];
-          const seleccionActual = seleccionados[servicio.nombre];
-          ivaprecio = precioSinIva * iva * cantidad;
-          if (seleccionActual) {
-            seleccionados[servicio.nombre].cantidad += cantidad;
-          } else {
-            seleccionados[servicio.nombre] = {
-              precio: servicio.precio,
-              cantidad,
-            };
-          }
-        }
-        ivaElement.textContent = `IVA 19%: $${ivaprecio}`;
-        resultadoElement.textContent = `El costo total (con IVA) es: $${costoTotal}`;
-        // Indicar que se ha ingresado un monto
-        montoIngresado = true;
+    const cantidadInput = document.createElement("input");
+    cantidadInput.type = "number";
+    cantidadInput.value = cantidad;
+    cantidadInput.min = "1";
+    cantidadInput.addEventListener("change", (event) => {
+      const nuevaCantidad = parseInt(event.target.value);
+      if (!isNaN(nuevaCantidad) && nuevaCantidad >= 1) {
+        cantidad = nuevaCantidad;
+        newItem.textContent = `${nombre} - Cantidad: ${cantidad} - Subtotal: $${cantidad * precio}`;
       } else {
-        alert("Opción no válida. Ingrese un número válido.");
+        alert("Ingrese una cantidad válida (mayor o igual a 1).");
+        cantidadInput.value = cantidad;
       }
-    } else {
-      alert("Cantidad no válida. Ingrese un número válido.");
-    }
+    });
 
-    // Después de cada selección, llama a la función para actualizar la lista de seleccionados
-    actualizarListaSeleccionados(seleccionados);
+    newItem.textContent = `${nombre} - Cantidad: ${cantidad} - Subtotal: $${cantidad * precio}`;
+    newItem.appendChild(cantidadInput);
+
+    listaSeleccionadosElement.appendChild(newItem);
   }
 }
 
-// Función para actualizar la lista de selecciones en el HTML
-function actualizarListaSeleccionados(seleccionados) {
-  const listaSeleccionadosElement =
-    document.getElementById("listaSeleccionados");
+
+function mostrarProductosServicios() {
+  const listaProductosElement = document.getElementById("listaProductos");
+  const listaServiciosElement = document.getElementById("listaServicios");
+  const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+
+  function handleChange(input, producto) {
+    const seleccionElement = document.getElementById(`seleccion-${input.id}`);
+    if (input.checked) {
+      if (!seleccionElement) {
+        agregarAListaSeleccionados(producto.nombre, producto.precio, 1, listaSeleccionadosElement);
+      }
+    } else {
+      if (seleccionElement) {
+        listaSeleccionadosElement.removeChild(seleccionElement);
+      }
+    }
+  }
+
+  function agregarCheckbox(label, producto, listaElement) {
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.name = label;
+    input.value = `${label}-${producto.nombre}`;
+    input.id = `${label}-${producto.nombre}`;
+
+    const checkboxLabel = document.createElement("label");
+    checkboxLabel.textContent = `${producto.nombre} - $${producto.precio}`;
+    checkboxLabel.htmlFor = input.id;
+
+    input.addEventListener("change", () => handleChange(input, producto));
+
+    listaElement.appendChild(input);
+    listaElement.appendChild(checkboxLabel);
+  }
+
+  productos.forEach((producto, index) => {
+    agregarCheckbox("productos", producto, listaProductosElement);
+  });
+
+  servicios.forEach((servicio, index) => {
+    agregarCheckbox("servicios", servicio, listaServiciosElement);
+  });
+}
+
+function calcularCosto() {
+  const iva = 0.19;
+
+  let costoTotal = 0;
+  let subtotalSeleccionados = 0;
+
+  const resultadoElement = document.getElementById("resultado");
+  const ivaElement = document.getElementById("iva");
+  const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+
+  // Recorrer los elementos en listaSeleccionadosElement
+  for (const listItem of listaSeleccionadosElement.children) {
+    const cantidadInput = listItem.querySelector('input[type="number"]');
+    const cantidad = parseInt(cantidadInput.value);
+    const precioTexto = listItem.textContent.match(/\$([\d,]+)/);
+    const precio = parseFloat(precioTexto[1].replace(",", ""));
+
+    // Calcular el subtotal para cada elemento y sumarlo al subtotal total
+    subtotalSeleccionados += cantidad * precio;
+  }
+
+  // Calcular el costo total con IVA
+  costoTotal = subtotalSeleccionados + subtotalSeleccionados * iva;
+
+  // Actualizar el elemento HTML con los resultados
+  ivaElement.innerHTML = `IVA 19%: $${subtotalSeleccionados * iva}`;
+  resultadoElement.innerHTML = `El costo total (con IVA) es: $${costoTotal}`;
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  mostrarProductosServicios();
+  const calcularButton = document.createElement("button");
+  calcularButton.textContent = "Calcular Costo";
+
+  calcularButton.addEventListener("click", calcularCosto);
+
+  document.body.appendChild(calcularButton);
+});
+
+function actualizarListaSeleccionados(seleccionados, listaSeleccionadosElement) {
   listaSeleccionadosElement.innerHTML = "";
 
   for (const nombre in seleccionados) {
     if (seleccionados.hasOwnProperty(nombre)) {
       const seleccion = seleccionados[nombre];
-      const listItem = document.createElement("li");
-      listItem.textContent = `${nombre} - Cantidad: ${
-        seleccion.cantidad
-      } - Subtotal: $${seleccion.cantidad * seleccion.precio}`;
-      listaSeleccionadosElement.appendChild(listItem);
+      agregarAListaSeleccionados(nombre, seleccion.precio, seleccion.cantidad, listaSeleccionadosElement);
     }
   }
 }
-
-// Esperar a que el documento HTML se cargue completamente
-document.addEventListener("DOMContentLoaded", function () {
-  mostrarProductosServicios(); // Llamamos a la función para mostrar productos y servicios
-  // Obtener el botón por su ID
-  const calcularButton = document.createElement("button");
-  calcularButton.textContent = "Calcular Costo";
-
-  // Agregar un evento de clic al botón
-  calcularButton.addEventListener("click", calcularCosto);
-
-  // Agregar el botón al cuerpo del documento
-  document.body.appendChild(calcularButton);
-});
-
-// Capturar la tecla "Enter" en el campo de entrada de cantidad
-document.addEventListener("keydown", function (event) {
-  if (event.key === "Enter") {
-    event.preventDefault(); // Evitar que se procese el "Enter" por defecto (p. ej., envío de formularios)
-    calcularCosto(); // Llamar a la función calcularCosto al presionar "Enter"
-  }
-});
