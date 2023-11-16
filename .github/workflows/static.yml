@@ -1,10 +1,9 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Build and Deploy
 
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build:
@@ -16,10 +15,10 @@ jobs:
       
       - name: Deploy to GitHub Pages
         run: |
-          git checkout gh-pages  # Ensure you are on the gh-pages branch
+          git branch -a  # List all branches to verify the existence of 'gh-pages'
+          git checkout -b gh-pages  # Create and checkout 'gh-pages' branch if it doesn't exist
           git rm -r .            # Remove all existing files
-          git checkout master -- index.html js/script.js css/main.css  # Copy the necessary files
+          git checkout main -- index.html js/script.js css/main.css  # Copy the necessary files
           git add .
           git commit -m "Update HTML and CSS"
-          git push
-
+          git push origin gh-pages  # Push changes to 'gh-pages'
