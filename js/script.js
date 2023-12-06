@@ -55,7 +55,11 @@ function agregarAListaSeleccionados(nombre, precio, cantidad, listaSeleccionados
       }
     });
 
-    newItem.textContent = `${nombre} - Cantidad: ${cantidad} - Subtotal: $${cantidad * precio}`;
+    const content = !isNaN(cantidad) && cantidad >= 1
+      ? `${nombre} - Cantidad: ${cantidad} - Subtotal: $${cantidad * precio}`
+      : `${nombre} - Cantidad: ${cantidad} - Subtotal: $0`;  // Otra opción: usar un subtotal de $0 si la cantidad no es válida
+
+    newItem.textContent = content;
     newItem.appendChild(cantidadInput);
 
     listaSeleccionadosElement.appendChild(newItem);
@@ -63,23 +67,17 @@ function agregarAListaSeleccionados(nombre, precio, cantidad, listaSeleccionados
 }
 
 
+
 function mostrarProductosServicios() {
   const listaProductosElement = document.getElementById("listaProductos");
   const listaServiciosElement = document.getElementById("listaServicios");
   const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
 
-  function handleChange(input, producto) {
+function handleChange(input, producto) {
     const seleccionElement = document.getElementById(`seleccion-${input.id}`);
-    if (input.checked) {
-      if (!seleccionElement) {
-        agregarAListaSeleccionados(producto.nombre, producto.precio, 1, listaSeleccionadosElement);
-      }
-    } else {
-      if (seleccionElement) {
-        listaSeleccionadosElement.removeChild(seleccionElement);
-      }
-    }
-  }
+    input.checked ? (!seleccionElement && agregarAListaSeleccionados(producto.nombre, producto.precio, 1, listaSeleccionadosElement)) : (seleccionElement && listaSeleccionadosElement.removeChild(seleccionElement));
+}
+  
 
   function agregarCheckbox(label, producto, listaElement) {
     const input = document.createElement("input");
