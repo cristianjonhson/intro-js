@@ -25,23 +25,17 @@ const servicios = [
 ];
 
 function agregarAListaSeleccionados(nombre, precio, cantidad, listaSeleccionadosElement) {
-  // Buscar si ya existe un elemento con el mismo nombre en la lista
   const listItem = Array.from(listaSeleccionadosElement.children).find(
     (element) => element.dataset.nombre === nombre
   );
 
   if (listItem) {
-    // Si ya existe, actualizar la cantidad y el subtotal
     const cantidadInput = listItem.querySelector("input");
     cantidadInput.value = cantidad;
 
-    // Calcular el nuevo subtotal
     const nuevoSubtotal = cantidad * precio;
-    
-    listItem.textContent = `${nombre} -  - Subtotal: $${nuevoSubtotal}`;
-
+    listItem.textContent = `${nombre} - Cantidad: ${cantidad} - Subtotal: $${nuevoSubtotal}`;
   } else {
-    // Si no existe, crear un nuevo elemento
     const newItem = document.createElement("li");
     newItem.dataset.nombre = nombre;
 
@@ -52,25 +46,24 @@ function agregarAListaSeleccionados(nombre, precio, cantidad, listaSeleccionados
     cantidadInput.addEventListener("change", (event) => {
       const nuevaCantidad = parseInt(event.target.value);
       if (!isNaN(nuevaCantidad) && nuevaCantidad >= 1) {
-        // Actualizar la cantidad y recalcular el subtotal
         cantidad = nuevaCantidad;
         const nuevoSubtotal = cantidad * precio;
-        listItem.textContent = `${nombre}  - Subtotal: $${nuevoSubtotal}`;
-        actualizarCostoTotal(); // Agrega esta línea para actualizar el costo total
+        listItem.textContent = `${nombre} - Cantidad: ${cantidad} - Subtotal: $${nuevoSubtotal}`;
+        actualizarCostoTotal();
+        actualizarLocalStorage(); // Agregar esta línea para actualizar localStorage
       } else {
         alert("Ingrese una cantidad válida (mayor o igual a 1).");
         cantidadInput.value = cantidad;
       }
     });
 
-    // Calcular el subtotal inicial
     const subtotalInicial = cantidad * precio;
-    newItem.textContent = `${nombre}  - Subtotal: $${subtotalInicial}`;
+    newItem.textContent = `${nombre} - Cantidad: ${cantidad} - Subtotal: $${subtotalInicial}`;
     newItem.appendChild(cantidadInput);
 
     listaSeleccionadosElement.appendChild(newItem);
 
-    // Agregar la nueva cantidad al costo total al agregar un nuevo elemento
+    actualizarLocalStorage(); // Agregar esta línea para actualizar localStorage
     actualizarCostoTotal();
   }
 }
@@ -183,9 +176,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.body.appendChild(calcularButton);
 
-  // Llamada inicial para actualizar el costo total al cargar la página
+  // Llamada inicial para actualizar el costo total y la lista desde localStorage al cargar la página
+  actualizarListaSeleccionados(obtenerSeleccionadosDesdeLocalStorage(), document.getElementById("listaSeleccionados"));
   actualizarCostoTotal();
 });
+
+function actualizarLocalStorage() {
+  const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+  const seleccionados = {};
+
+  for (const listItem of listaSeleccionadosElement.children) {
+    const nombre = listItem.dataset.nombre;
+    const cantidadInput = listItem.querySelector('input[type="number"]');
+    const cantidad = parseInt(cantidadInput.value);
+    const precioTexto = listItem.textContent.match(/\$([\d,]+)/);
+    const precio = parseFloat(precioTexto[1].replace(",", ""));
+
+    seleccionados[nombre] = {
+      precio: precio,
+      cantidad: cantidad,
+    };
+  }
+
+  localStorage.setItem("seleccionados", JSON.stringify(seleccionados));
+}
+
+function obtenerSeleccionadosDesdeLocalStorage() {
+  const seleccionadosString = localStorage.getItem("seleccionados");
+  return seleccionadosString ? JSON.parse(seleccionadosString) : {};
+}
 
 function actualizarListaSeleccionados(seleccionados, listaSeleccionadosElement) {
   listaSeleccionadosElement.innerHTML = "";
