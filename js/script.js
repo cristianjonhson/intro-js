@@ -34,7 +34,18 @@ function agregarAListaSeleccionados(nombre, precio, cantidad, listaSeleccionados
     cantidadInput.value = cantidad;
 
     const nuevoSubtotal = cantidad * precio;
-    listItem.textContent = `${nombre} - Cantidad: ${cantidad} - Subtotal: $${nuevoSubtotal}`;
+    
+    // Buscar el elemento dentro del nuevo DOM después de la actualización
+    const updatedListItem = Array.from(listaSeleccionadosElement.children).find(
+      (element) => element.dataset.nombre === nombre
+    );
+    
+    // Actualizar solo la parte del Subtotal en el contenido HTML
+    const subtotalElement = updatedListItem.querySelector(".subtotal");
+    subtotalElement.textContent = `Subtotal: $${nuevoSubtotal}`;
+    
+    actualizarCostoTotal();
+    actualizarLocalStorage();
   } else {
     const newItem = document.createElement("li");
     newItem.dataset.nombre = nombre;
@@ -48,9 +59,18 @@ function agregarAListaSeleccionados(nombre, precio, cantidad, listaSeleccionados
       if (!isNaN(nuevaCantidad) && nuevaCantidad >= 1) {
         cantidad = nuevaCantidad;
         const nuevoSubtotal = cantidad * precio;
-        listItem.textContent = `${nombre} - Cantidad: ${cantidad} - Subtotal: $${nuevoSubtotal}`;
+        
+        // Buscar el elemento dentro del nuevo DOM después de la actualización
+        const updatedListItem = Array.from(listaSeleccionadosElement.children).find(
+          (element) => element.dataset.nombre === nombre
+        );
+        
+        // Actualizar solo la parte del Subtotal en el contenido HTML
+        const subtotalElement = updatedListItem.querySelector(".subtotal");
+        subtotalElement.textContent = `Subtotal: $${nuevoSubtotal}`;
+        
         actualizarCostoTotal();
-        actualizarLocalStorage(); // Agregar esta línea para actualizar localStorage
+        actualizarLocalStorage();
       } else {
         alert("Ingrese una cantidad válida (mayor o igual a 1).");
         cantidadInput.value = cantidad;
@@ -58,12 +78,12 @@ function agregarAListaSeleccionados(nombre, precio, cantidad, listaSeleccionados
     });
 
     const subtotalInicial = cantidad * precio;
-    newItem.textContent = `${nombre} - Cantidad: ${cantidad} - Subtotal: $${subtotalInicial}`;
+    newItem.innerHTML = `${nombre} - Cantidad: ${cantidad} - <span class="subtotal">Subtotal: $${subtotalInicial}</span>`;
     newItem.appendChild(cantidadInput);
 
     listaSeleccionadosElement.appendChild(newItem);
 
-    actualizarLocalStorage(); // Agregar esta línea para actualizar localStorage
+    actualizarLocalStorage();
     actualizarCostoTotal();
   }
 }
