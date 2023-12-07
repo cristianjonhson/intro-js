@@ -158,33 +158,46 @@ function handleChange(input, producto) {
 }
 
 function calcularCosto() {
-  const iva = 0.19;
-
-  let costoTotal = 0;
-  let subtotalSeleccionados = 0;
-
-  const resultadoElement = document.getElementById("resultado");
-  const ivaElement = document.getElementById("iva");
-  const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
-
-  // Recorrer los elementos en listaSeleccionadosElement
-  for (const listItem of listaSeleccionadosElement.children) {
-    const cantidadInput = listItem.querySelector('input[type="number"]');
-    const cantidad = parseInt(cantidadInput.value);
-    const precioTexto = listItem.textContent.match(/\$([\d,]+)/);
-    const precio = parseFloat(precioTexto[1].replace(",", ""));
-
-    // Calcular el subtotal para cada elemento y sumarlo al subtotal total
-    subtotalSeleccionados += cantidad * precio;
-  }
-
-  // Calcular el costo total con IVA
-  costoTotal = subtotalSeleccionados + subtotalSeleccionados * iva;
-
-  // Actualizar el elemento HTML con los resultados
-  ivaElement.innerHTML = `IVA 19%: $${subtotalSeleccionados * iva}`;
-  resultadoElement.innerHTML = `El costo total (con IVA) es: $${costoTotal}`;
+  // Mostrar SweetAlert para confirmar el cálculo
+  Swal.fire({
+    title: '¿Desea calcular el costo?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Calcular',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Continuar con el cálculo
+      const iva = 0.19;
+  
+      let costoTotal = 0;
+      let subtotalSeleccionados = 0;
+  
+      const resultadoElement = document.getElementById("resultado");
+      const ivaElement = document.getElementById("iva");
+      const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+  
+      // Recorrer los elementos en listaSeleccionadosElement
+      for (const listItem of listaSeleccionadosElement.children) {
+        const cantidadInput = listItem.querySelector('input[type="number"]');
+        const cantidad = parseInt(cantidadInput.value);
+        const precioTexto = listItem.textContent.match(/\$([\d,]+)/);
+        const precio = parseFloat(precioTexto[1].replace(",", ""));
+  
+        // Calcular el subtotal para cada elemento y sumarlo al subtotal total
+        subtotalSeleccionados += cantidad * precio;
+      }
+  
+      // Calcular el costo total con IVA
+      costoTotal = subtotalSeleccionados + subtotalSeleccionados * iva;
+  
+      // Actualizar el elemento HTML con los resultados
+      ivaElement.innerHTML = `IVA 19%: $${subtotalSeleccionados * iva}`;
+      resultadoElement.innerHTML = `El costo total (con IVA) es: $${costoTotal}`;
+    }
+  });
 }
+
 
 
 document.addEventListener("DOMContentLoaded", function () {
