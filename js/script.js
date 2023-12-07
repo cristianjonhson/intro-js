@@ -194,9 +194,20 @@ function calcularCosto() {
       // Actualizar el elemento HTML con los resultados
       ivaElement.innerHTML = `IVA 19%: $${subtotalSeleccionados * iva}`;
       resultadoElement.innerHTML = `El costo total (con IVA) es: $${costoTotal}`;
+
+      // Mostrar notificación Toastify después de calcular
+      Toastify({
+        text: "¡Cálculo completado!",
+        duration: 3000, // Duración en milisegundos
+        close: true,
+        gravity: "top", // Posición de la notificación
+        position: 'right',
+        stopOnFocus: true,
+      }).showToast();
     }
   });
 }
+
 
 
 
