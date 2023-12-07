@@ -34,7 +34,12 @@ function agregarAListaSeleccionados(nombre, precio, cantidad, listaSeleccionados
     // Si ya existe, actualizar la cantidad y el subtotal
     const cantidadInput = listItem.querySelector("input");
     cantidadInput.value = cantidad;
-    listItem.textContent = `${nombre} - Cantidad: ${cantidad} - Subtotal: $${cantidad * precio}`;
+
+    // Calcular el nuevo subtotal
+    const nuevoSubtotal = cantidad * precio;
+    
+    listItem.textContent = `${nombre} -  - Subtotal: $${nuevoSubtotal}`;
+
   } else {
     // Si no existe, crear un nuevo elemento
     const newItem = document.createElement("li");
@@ -47,25 +52,59 @@ function agregarAListaSeleccionados(nombre, precio, cantidad, listaSeleccionados
     cantidadInput.addEventListener("change", (event) => {
       const nuevaCantidad = parseInt(event.target.value);
       if (!isNaN(nuevaCantidad) && nuevaCantidad >= 1) {
+        // Actualizar la cantidad y recalcular el subtotal
         cantidad = nuevaCantidad;
-        newItem.textContent = `${nombre} - Cantidad: ${cantidad} - Subtotal: $${cantidad * precio}`;
+        const nuevoSubtotal = cantidad * precio;
+        listItem.textContent = `${nombre}  - Subtotal: $${nuevoSubtotal}`;
+        actualizarCostoTotal(); // Agrega esta línea para actualizar el costo total
       } else {
         alert("Ingrese una cantidad válida (mayor o igual a 1).");
         cantidadInput.value = cantidad;
       }
     });
 
-    const content = !isNaN(cantidad) && cantidad >= 1
-      ? `${nombre} - Cantidad: ${cantidad} - Subtotal: $${cantidad * precio}`
-      : `${nombre} - Cantidad: ${cantidad} - Subtotal: $0`;  // Otra opción: usar un subtotal de $0 si la cantidad no es válida
-
-    newItem.textContent = content;
+    // Calcular el subtotal inicial
+    const subtotalInicial = cantidad * precio;
+    newItem.textContent = `${nombre}  - Subtotal: $${subtotalInicial}`;
     newItem.appendChild(cantidadInput);
 
     listaSeleccionadosElement.appendChild(newItem);
+
+    // Agregar la nueva cantidad al costo total al agregar un nuevo elemento
+    actualizarCostoTotal();
   }
 }
 
+
+function actualizarCostoTotal() {
+  const iva = 0.19;
+
+  let costoTotal = 0;
+  let subtotalSeleccionados = 0;
+
+  const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+
+  // Recorrer los elementos en listaSeleccionadosElement
+  for (const listItem of listaSeleccionadosElement.children) {
+    const cantidadInput = listItem.querySelector('input[type="number"]');
+    const cantidad = parseInt(cantidadInput.value);
+    const precioTexto = listItem.textContent.match(/\$([\d,]+)/);
+    const precio = parseFloat(precioTexto[1].replace(",", ""));
+
+    // Calcular el subtotal para cada elemento y sumarlo al subtotal total
+    subtotalSeleccionados += cantidad * precio;
+  }
+
+  // Calcular el costo total con IVA
+  costoTotal = subtotalSeleccionados + subtotalSeleccionados * iva;
+
+  // Actualizar el elemento HTML con los resultados
+  const ivaElement = document.getElementById("iva");
+  const resultadoElement = document.getElementById("resultado");
+
+  ivaElement.innerHTML = `IVA 19%: $${subtotalSeleccionados * iva}`;
+  resultadoElement.innerHTML = `El costo total (con IVA) es: $${costoTotal}`;
+}
 
 
 function mostrarProductosServicios() {
@@ -143,6 +182,9 @@ document.addEventListener("DOMContentLoaded", function () {
   calcularButton.addEventListener("click", calcularCosto);
 
   document.body.appendChild(calcularButton);
+
+  // Llamada inicial para actualizar el costo total al cargar la página
+  actualizarCostoTotal();
 });
 
 function actualizarListaSeleccionados(seleccionados, listaSeleccionadosElement) {
