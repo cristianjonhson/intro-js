@@ -10,6 +10,18 @@ Este es un proyecto simple de JavaScript que permite a los usuarios calcular el 
 4. El programa calculará y mostrará el costo total.
 5. Puede repetir este proceso tantas veces como desee hasta que escriba "salir" para finalizar.
 
+## Cambios Realizados
+
+Se realizaron varias mejoras en el código y la funcionalidad del simulador:
+
+- **Mejora en la Interfaz de Usuario**: Se implementó una interfaz más amigable y comprensible para los usuarios.
+
+- **Manejo de Errores Mejorado**: Se añadieron mensajes de error más descriptivos y se mejoró la gestión de errores.
+
+- **Fetch de Datos desde un Archivo JSON**: En lugar de tener los datos directamente en el código, ahora se realizan solicitudes Fetch para obtener los productos y servicios desde un archivo JSON.
+
+- **Implementación de Promesas y `async/await`**: Se implementó el uso de promesas y `async/await` para mejorar la estructura del código y hacerlo más fácil de entender.
+
 ## Uso
 
 Puede clonar este repositorio y abrir `index.html` en su navegador [Simulador de Costo](https://github.com/cristianjonhson/intro-js)
