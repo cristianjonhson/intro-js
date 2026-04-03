@@ -1,50 +1,60 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculadora de Costos</title>
-    <link rel="stylesheet" href="../intro-js/css/style.css" />
-    <!-- Agrega un archivo CSS para estilos adicionales si es necesario -->
-  </head>
-  <body>
-    <!-- Navbar -->
-    <nav>
-      <ul>
-        <li><a href="#">Inicio</a></li>
-      </ul>
-    </nav>
 
-    <h1>Simulador de Costo de Productos y Servicios</h1>
-    <div id="listaProductos">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de Costos</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Agrega un archivo CSS para estilos adicionales si es necesario -->
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="topbar">
+    <ul>
+      <li><a href="#">Inicio</a></li>
+    </ul>
+  </nav>
+
+  <main class="layout">
+    <h1 class="hero-title">Simulador de Costo de Productos y Servicios</h1>
+
+    <section id="listaProductos" class="card">
       <h2>Productos</h2>
-    </div>
-    <div id="listaServicios">
+    </section>
+
+    <section id="listaServicios" class="card">
       <h2>Servicios</h2>
-    </div>
-    <div>
+    </section>
+
+    <section class="card card-wide">
       <h2>Selecciones</h2>
       <ul id="listaSeleccionados"></ul>
-      <label id="producto-1-label"></label>
-      <label id="producto-2-label"></label>
-      <label id="producto-3-label"></label>
-      <label id="servicio-1-label"></label>
-      <label id="servicio-2-label"></label>
-    </div>
+      <div class="labels-grid">
+        <label id="producto-1-label"></label>
+        <label id="producto-2-label"></label>
+        <label id="producto-3-label"></label>
+        <label id="servicio-1-label"></label>
+        <label id="servicio-2-label"></label>
+      </div>
+    </section>
 
-    <div>
+    <section class="card card-wide total-card">
       <h2>Calculo</h2>
       <p id="iva">IVA 19%: $0</p>
       <p id="resultado">Resultados:</p>
-    </div>
-    <br />
+    </section>
+  </main>
+  <br />
 
-    <!-- SweetAlert CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-    <script src="js/script.js"></script>
-    
-    <!-- Toastify CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"/>
-    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-  </body>
+  <!-- SweetAlert CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <script src="js/script.js"></script>
+
+  <!-- Toastify CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</body>
+
 </html>
