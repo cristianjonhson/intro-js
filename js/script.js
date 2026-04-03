@@ -25,12 +25,28 @@ function calcularCosto() {
 
     const iva = 0.19;
 
+    const conceptoTramites = [
+        // Puedes agregar elementos de concepto tramites aquí
+        {
+            nombre: "Concepto 1",
+            precio: 5000
+        },
+        {
+            nombre: "Concepto 2",
+            precio: 8000
+        },
+    ];
+
     while (true) {
         const seleccionInput = prompt(
-            "Seleccione un producto o servicio:\n" +
+            "Seleccione un producto, servicio o concepto de tramites:\n" +
             productos.map((producto, index) => `${index + 1} - ${producto.nombre} ($${producto.precio})`).join("\n") +
             "\n" +
             servicios.map((servicio, index) => `${productos.length + index + 1} - ${servicio.nombre} ($${servicio.precio})`).join("\n") +
+            (conceptoTramites.length > 0 ?
+                "\nConceptos de Tramites:\n" +
+                conceptoTramites.map((concepto, index) => `${productos.length + servicios.length + index + 1} - ${concepto.nombre} ($${concepto.precio})`).join("\n") :
+                "") +
             "\nPara salir, escriba 'salir'"
         );
 
@@ -48,13 +64,18 @@ function calcularCosto() {
         if (!isNaN(cantidad)) {
             let costoTotal = 0;
             const opcion = parseInt(seleccion);
-            if (!isNaN(opcion) && opcion >= 1 && opcion <= productos.length + servicios.length) {
+
+            if (!isNaN(opcion) && opcion >= 1 && opcion <= productos.length + servicios.length + conceptoTramites.length) {
                 if (opcion <= productos.length) {
                     const precioSinIva = productos[opcion - 1].precio;
                     costoTotal = (precioSinIva + precioSinIva * iva) * cantidad;
-                } else {
+                } else if (opcion <= productos.length + servicios.length) {
                     const precioSinIva = servicios[opcion - productos.length - 1].precio;
                     costoTotal = (precioSinIva + precioSinIva * iva) * cantidad;
+                } else {
+                    // Si la opción seleccionada está en el array de concepto de tramites
+                    const conceptoTramite = conceptoTramites[opcion - productos.length - servicios.length - 1];
+                    costoTotal = (conceptoTramite.precio + conceptoTramite.precio * iva) * cantidad;
                 }
                 alert(`El costo total (con IVA) es: $${costoTotal}`);
             } else {
