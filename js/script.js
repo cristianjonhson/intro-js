@@ -32,15 +32,19 @@ function actualizarSubtotalItem(listItem) {
 
 function crearItemSeleccionado(nombre, precio, cantidad) {
   const listItem = document.createElement("li");
+  listItem.className = "seleccion-chip";
   listItem.dataset.nombre = nombre;
   listItem.dataset.precio = String(precio);
 
   const nombreSpan = document.createElement("span");
-  nombreSpan.className = "nombre-item";
-  nombreSpan.textContent = `${nombre} - Precio unitario: $${formatearMoneda(precio)} `;
+  nombreSpan.className = "chip-pill nombre-item";
+  nombreSpan.textContent = `${nombre} | $${formatearMoneda(precio)}`;
+
+  const cantidadWrapper = document.createElement("span");
+  cantidadWrapper.className = "chip-pill cantidad-grupo";
 
   const cantidadLabel = document.createElement("span");
-  cantidadLabel.textContent = "Cantidad: ";
+  cantidadLabel.textContent = "Cantidad";
 
   const cantidadInput = document.createElement("input");
   cantidadInput.type = "number";
@@ -48,7 +52,7 @@ function crearItemSeleccionado(nombre, precio, cantidad) {
   cantidadInput.value = cantidad;
 
   const subtotalSpan = document.createElement("span");
-  subtotalSpan.className = "subtotal";
+  subtotalSpan.className = "chip-pill subtotal";
 
   cantidadInput.addEventListener("change", (event) => {
     const nuevaCantidad = parseInt(event.target.value, 10);
@@ -66,10 +70,11 @@ function crearItemSeleccionado(nombre, precio, cantidad) {
     }
   });
 
+  cantidadWrapper.appendChild(cantidadLabel);
+  cantidadWrapper.appendChild(cantidadInput);
+
   listItem.appendChild(nombreSpan);
-  listItem.appendChild(cantidadLabel);
-  listItem.appendChild(cantidadInput);
-  listItem.appendChild(document.createTextNode(" - "));
+  listItem.appendChild(cantidadWrapper);
   listItem.appendChild(subtotalSpan);
 
   actualizarSubtotalItem(listItem);
