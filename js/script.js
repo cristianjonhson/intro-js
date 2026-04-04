@@ -286,12 +286,16 @@ function inicializarApp() {
   if (!calcularButton) {
     calcularButton = document.createElement("button");
     calcularButton.id = "calcularCostoBtn";
+    calcularButton.className = "action-button";
     calcularButton.textContent = "Calcular Costo";
     calcularButton.type = "button";
     const totalCard = document.querySelector(".total-card");
+    const ivaElement = document.getElementById("iva");
 
-    if (totalCard) {
-      totalCard.insertBefore(calcularButton, totalCard.firstChild.nextSibling);
+    if (totalCard && ivaElement) {
+      totalCard.insertBefore(calcularButton, ivaElement);
+    } else if (totalCard) {
+      totalCard.appendChild(calcularButton);
     } else {
       document.body.appendChild(calcularButton);
     }
