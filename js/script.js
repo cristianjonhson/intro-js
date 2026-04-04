@@ -10,8 +10,8 @@ const servicios = [
 ];
 
 const conceptoTramites = [
-  { nombre: "Concepto 1", precio: 5000 },
-  { nombre: "Concepto 2", precio: 8000 },
+  { nombre: "Tramite 1", precio: 5000 },
+  { nombre: "Tramite 2", precio: 8000 },
 ];
 
 const IVA = 0.19;
@@ -244,26 +244,29 @@ function mostrarProductosServicios() {
 }
 
 function mostrarSweetAlert() {
-  return new Promise((resolve, reject) => {
-    Swal.fire({
-      title: "¿Desea calcular el costo?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Calcular",
-      cancelButtonText: "Cancelar",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        resolve(true);
-      } else {
-        reject(false);
-      }
-    });
+  return Swal.fire({
+    title: "¿Desea calcular el costo?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Calcular",
+    cancelButtonText: "Cancelar",
+  }).then((result) => {
+    // Compatibilidad con distintas versiones de SweetAlert2.
+    if (typeof result.isConfirmed === "boolean") {
+      return result.isConfirmed;
+    }
+
+    return result.value === true;
   });
 }
 
 function calcularCosto() {
   mostrarSweetAlert()
-    .then(() => {
+    .then((isConfirmed) => {
+      if (!isConfirmed) {
+        return;
+      }
+
       actualizarCostoTotal(true);
 
       Toastify({
@@ -274,9 +277,6 @@ function calcularCosto() {
         position: "right",
         stopOnFocus: true,
       }).showToast();
-    })
-    .catch(() => {
-      console.log("Operación cancelada");
     });
 }
 
