@@ -127,6 +127,19 @@ ul {
   color: var(--muted);
 }
 
+#listaSeleccionados {
+  list-style: none;
+  padding-left: 0;
+}
+
+#listaSeleccionados li {
+  border: 1px dashed rgba(216, 86, 42, 0.35);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.62);
+  padding: 0.45rem 0.6rem;
+  margin-bottom: 0.55rem;
+}
+
 #listaProductos>div,
 #listaServicios>div,
 #listaConceptos>div {
@@ -150,13 +163,6 @@ ul {
   border-radius: 10px;
   min-height: auto;
   padding: 0.4rem 0.6rem;
-}
-
-.labels-grid {
-  margin-top: 0.6rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 0.45rem;
 }
 
 label {
