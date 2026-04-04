@@ -140,6 +140,35 @@ ul {
   margin-bottom: 0.55rem;
 }
 
+.seleccion-chip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chip-pill {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(216, 86, 42, 0.25);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.3rem 0.65rem;
+  line-height: 1.2;
+}
+
+.cantidad-grupo {
+  gap: 0.4rem;
+}
+
+.cantidad-grupo input[type="number"] {
+  width: 72px;
+  border: 1px solid rgba(49, 60, 63, 0.2);
+  border-radius: 8px;
+  padding: 0.2rem 0.35rem;
+  background: #fff;
+}
+
 #listaProductos>div,
 #listaServicios>div,
 #listaConceptos>div {
