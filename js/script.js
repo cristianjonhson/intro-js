@@ -125,10 +125,30 @@ function actualizarEstadoBotonCalcular() {
   calcularButton.disabled = !tieneSeleccion;
 }
 
-function actualizarCostoTotal() {
-  let subtotalSeleccionados = 0;
+function ocultarResultados() {
+  const ivaElement = document.getElementById("iva");
+  const resultadoElement = document.getElementById("resultado");
 
+  if (!ivaElement || !resultadoElement) {
+    return;
+  }
+
+  ivaElement.textContent = "";
+  resultadoElement.textContent = "";
+  ivaElement.hidden = true;
+  resultadoElement.hidden = true;
+}
+
+function obtenerTotalesSeleccionados() {
+  let subtotalSeleccionados = 0;
   const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+
+  if (!listaSeleccionadosElement) {
+    return {
+      montoIva: 0,
+      costoTotal: 0,
+    };
+  }
 
   for (const listItem of listaSeleccionadosElement.children) {
     const precio = Number(listItem.dataset.precio);
@@ -141,11 +161,27 @@ function actualizarCostoTotal() {
   const montoIva = subtotalSeleccionados * IVA;
   const costoTotal = subtotalSeleccionados + montoIva;
 
+  return {
+    montoIva,
+    costoTotal,
+  };
+}
+
+function actualizarCostoTotal(mostrarResultado = false) {
+  const { montoIva, costoTotal } = obtenerTotalesSeleccionados();
+
   const ivaElement = document.getElementById("iva");
   const resultadoElement = document.getElementById("resultado");
 
-  ivaElement.textContent = `IVA 19%: $${formatearMoneda(montoIva)}`;
-  resultadoElement.textContent = `El costo total (con IVA) es: $${formatearMoneda(costoTotal)}`;
+  if (ivaElement && resultadoElement && mostrarResultado) {
+    ivaElement.textContent = `IVA 19%: $${formatearMoneda(montoIva)}`;
+    resultadoElement.textContent = `El costo total (con IVA) es: $${formatearMoneda(costoTotal)}`;
+    ivaElement.hidden = false;
+    resultadoElement.hidden = false;
+  } else {
+    ocultarResultados();
+  }
+
   actualizarEstadoBotonCalcular();
 }
 
@@ -228,7 +264,7 @@ function mostrarSweetAlert() {
 function calcularCosto() {
   mostrarSweetAlert()
     .then(() => {
-      actualizarCostoTotal();
+      actualizarCostoTotal(true);
 
       Toastify({
         text: "¡Cálculo completado!",
@@ -297,7 +333,7 @@ function inicializarApp() {
 
   actualizarListaSeleccionados(seleccionados, listaSeleccionadosElement);
   sincronizarCheckboxes(seleccionados);
-  actualizarCostoTotal();
+  actualizarCostoTotal(false);
 
   let calcularButton = document.getElementById("calcularCostoBtn");
 
@@ -320,6 +356,7 @@ function inicializarApp() {
   }
 
   actualizarEstadoBotonCalcular();
+  ocultarResultados();
 
   calcularButton.addEventListener("click", calcularCosto);
 }
