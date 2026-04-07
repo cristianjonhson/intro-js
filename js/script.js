@@ -159,29 +159,34 @@ function crearCheckbox(item, grupo, listaElement, listaSeleccionadosElement) {
   listaElement.appendChild(contenedor);
 }
 
+function renderizarCategoria(items, grupo, listaElement, listaSeleccionadosElement, mensajeVacio) {
+  if (!listaElement) {
+    return;
+  }
+
+  listaElement.innerHTML = "";
+
+  if (!Array.isArray(items) || items.length === 0) {
+    const aviso = document.createElement("p");
+    aviso.textContent = mensajeVacio;
+    listaElement.appendChild(aviso);
+    return;
+  }
+
+  items.forEach((item) => {
+    crearCheckbox(item, grupo, listaElement, listaSeleccionadosElement);
+  });
+}
+
 function mostrarProductosServicios() {
   const listaProductosElement = document.getElementById("listaProductos");
   const listaServiciosElement = document.getElementById("listaServicios");
   const listaConceptosElement = document.getElementById("listaConceptos");
   const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
 
-  if (listaProductosElement) {
-    productos.forEach((producto) => {
-      crearCheckbox(producto, "productos", listaProductosElement, listaSeleccionadosElement);
-    });
-  }
-
-  if (listaServiciosElement) {
-    servicios.forEach((servicio) => {
-      crearCheckbox(servicio, "servicios", listaServiciosElement, listaSeleccionadosElement);
-    });
-  }
-
-  if (listaConceptosElement) {
-    conceptoTramites.forEach((concepto) => {
-      crearCheckbox(concepto, "conceptos", listaConceptosElement, listaSeleccionadosElement);
-    });
-  }
+  renderizarCategoria(productos, "productos", listaProductosElement, listaSeleccionadosElement, "No hay productos disponibles.");
+  renderizarCategoria(servicios, "servicios", listaServiciosElement, listaSeleccionadosElement, "No hay servicios disponibles.");
+  renderizarCategoria(conceptoTramites, "conceptos", listaConceptosElement, listaSeleccionadosElement, "No hay conceptos de tramites disponibles.");
 }
 
 function mostrarSweetAlert() {
@@ -261,11 +266,16 @@ function sincronizarCheckboxes(seleccionados) {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function inicializarApp() {
   mostrarProductosServicios();
 
   const seleccionados = obtenerSeleccionadosDesdeLocalStorage();
   const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+
+  if (!listaSeleccionadosElement) {
+    console.error("No se encontro el elemento listaSeleccionados en el HTML.");
+    return;
+  }
 
   actualizarListaSeleccionados(seleccionados, listaSeleccionadosElement);
   sincronizarCheckboxes(seleccionados);
@@ -281,4 +291,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   calcularButton.addEventListener("click", calcularCosto);
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", inicializarApp);
+} else {
+  inicializarApp();
+}
