@@ -1,45 +1,71 @@
-# Simulador de Costo de Productos y Servicios
+# Simulador de Costo de Productos, Servicios y Tramites
 
-Este es un proyecto simple de JavaScript que permite a los usuarios calcular el costo total de productos y servicios seleccionados. Los usuarios pueden seleccionar un producto o servicio, ingresar la cantidad y el sistema calculará el costo total.
+Aplicacion web en JavaScript vanilla para calcular el costo total con IVA (19%) de una seleccion de productos, servicios y conceptos de tramites.
 
-## Funcionamiento
+## Caracteristicas
 
-1. Abra `index.html` en su navegador web.
-2. Se le pedirá que seleccione un producto o servicio ingresando un número del 1 al 5. También puede escribir "salir" para finalizar el programa.
-3. Luego, ingrese la cantidad que desea comprar.
-4. El programa calculará y mostrará el costo total.
-5. Puede repetir este proceso tantas veces como desee hasta que escriba "salir" para finalizar.
+- Render dinamico de categorias desde JavaScript:
+	- Productos
+	- Servicios
+	- Conceptos de tramites
+- Seleccion con checkboxes.
+- Cantidad editable por item seleccionado.
+- Calculo de subtotal por item y total final con IVA.
+- Confirmacion de calculo con SweetAlert2.
+- Notificacion de calculo completado con Toastify.
+- Persistencia de seleccion mediante localStorage.
+- Boton de calcular generado desde JavaScript.
+- Resultado (IVA y total) oculto hasta confirmar el calculo.
 
-## Cambios Realizados
+## Estructura del proyecto
 
-Se realizaron varias mejoras en el código y la funcionalidad del simulador:
+```text
+index.html
+css/
+	style.css
+js/
+	script.js
+```
 
-- **Mejora en la Interfaz de Usuario**: Se implementó una interfaz más amigable y comprensible para los usuarios.
+## Como ejecutar
 
-- **Manejo de Errores Mejorado**: Se añadieron mensajes de error más descriptivos y se mejoró la gestión de errores.
+1. Clona el repositorio.
+2. Inicia un servidor local desde la carpeta del proyecto.
+3. Abre la URL local en tu navegador.
 
-- **Fetch de Datos desde un Archivo JSON**: En lugar de tener los datos directamente en el código, ahora se realizan solicitudes Fetch para obtener los productos y servicios desde un archivo JSON.
+Ejemplo con Python:
 
-- **Implementación de Promesas y `async/await`**: Se implementó el uso de promesas y `async/await` para mejorar la estructura del código y hacerlo más fácil de entender.
+```bash
+python3 -m http.server 5500
+```
 
-## Uso
+Luego abre:
 
-Puede clonar este repositorio y abrir `index.html` en su navegador [Simulador de Costo](https://github.com/cristianjonhson/intro-js)
+```text
+http://localhost:5500
+```
 
-## Contribuciones
+## Flujo de uso
 
-Siéntase libre de contribuir a este proyecto. Puede mejorar el código, agregar nuevas características o solucionar problemas si los encuentra.
+1. Marca uno o mas items en Productos, Servicios o Conceptos de tramites.
+2. Ajusta cantidades en la seccion de Selecciones.
+3. Presiona Calcular Costo.
+4. Confirma en el modal de SweetAlert.
+5. Se mostraran IVA y costo total en la seccion Calculo.
 
-1. Fork (haga una copia) de este repositorio.
-2. Cree su rama de características (`git checkout -b feature/nueva-caracteristica`).
-3. Commit (haga confirmaciones) de sus cambios (`git commit -m 'Agrega nueva característica'`).
-4. Empuje (suba) su rama de características (`git push origin feature/nueva-caracteristica`).
-5. Abra una solicitud de extracción (pull request).
+## Tecnologias
 
-## Licencia
+- HTML5
+- CSS3
+- JavaScript (ES6+)
+- SweetAlert2 (CDN)
+- Toastify (CDN)
 
-Este proyecto está bajo la Licencia MIT. Consulte el archivo [LICENSE](LICENSE) para obtener más detalles.
+## Notas
 
----
+- Si no hay items seleccionados, el boton de calcular se mantiene deshabilitado.
+- El resultado no se muestra hasta confirmar el calculo.
 
-Creado por [CristianJonhson]
+## Repositorio
+
+[https://github.com/cristianjonhson/intro-js](https://github.com/cristianjonhson/intro-js)
