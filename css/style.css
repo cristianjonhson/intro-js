@@ -194,6 +194,18 @@ label {
   filter: brightness(1.05);
 }
 
+.action-button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.2);
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+.action-button:disabled:hover {
+  transform: none;
+  filter: grayscale(0.2);
+}
+
 #iva,
 #resultado {
   margin: 0.36rem 0;
