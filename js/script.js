@@ -110,6 +110,21 @@ function eliminarDeListaSeleccionados(nombre) {
   }
 }
 
+function actualizarEstadoBotonCalcular() {
+  const calcularButton = document.getElementById("calcularCostoBtn");
+  const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+  const checkboxes = document.querySelectorAll('input[type="checkbox"][data-nombre]');
+
+  if (!calcularButton || !listaSeleccionadosElement) {
+    return;
+  }
+
+  const tieneSeleccionPorCheckbox = Array.from(checkboxes).some((checkbox) => checkbox.checked);
+  const tieneSeleccionPorLista = listaSeleccionadosElement.children.length > 0;
+  const tieneSeleccion = tieneSeleccionPorCheckbox || tieneSeleccionPorLista;
+  calcularButton.disabled = !tieneSeleccion;
+}
+
 function actualizarCostoTotal() {
   let subtotalSeleccionados = 0;
 
@@ -131,6 +146,7 @@ function actualizarCostoTotal() {
 
   ivaElement.textContent = `IVA 19%: $${formatearMoneda(montoIva)}`;
   resultadoElement.textContent = `El costo total (con IVA) es: $${formatearMoneda(costoTotal)}`;
+  actualizarEstadoBotonCalcular();
 }
 
 function crearCheckbox(item, grupo, listaElement, listaSeleccionadosElement) {
@@ -152,6 +168,8 @@ function crearCheckbox(item, grupo, listaElement, listaSeleccionadosElement) {
     } else {
       eliminarDeListaSeleccionados(item.nombre);
     }
+
+    actualizarEstadoBotonCalcular();
   });
 
   contenedor.appendChild(input);
@@ -300,6 +318,8 @@ function inicializarApp() {
       document.body.appendChild(calcularButton);
     }
   }
+
+  actualizarEstadoBotonCalcular();
 
   calcularButton.addEventListener("click", calcularCosto);
 }
