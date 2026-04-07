@@ -1,159 +1,284 @@
 const productos = [
-  {
-    nombre: "Producto 1",
-    precio: 10000,
-  },
-  {
-    nombre: "Producto 2",
-    precio: 20000,
-  },
-  {
-    nombre: "Producto 3",
-    precio: 15000,
-  },
+  { nombre: "Producto 1", precio: 10000 },
+  { nombre: "Producto 2", precio: 20000 },
+  { nombre: "Producto 3", precio: 15000 },
 ];
 
 const servicios = [
-  {
-    nombre: "Servicio 1",
-    precio: 30000,
-  },
-  {
-    nombre: "Servicio 2",
-    precio: 25000,
-  },
+  { nombre: "Servicio 1", precio: 30000 },
+  { nombre: "Servicio 2", precio: 25000 },
 ];
 
+const conceptoTramites = [
+  { nombre: "Concepto 1", precio: 5000 },
+  { nombre: "Concepto 2", precio: 8000 },
+];
+
+const IVA = 0.19;
+
+function formatearMoneda(valor) {
+  return Number(valor).toLocaleString("es-CL");
+}
+
+function actualizarSubtotalItem(listItem) {
+  const precio = Number(listItem.dataset.precio);
+  const cantidadInput = listItem.querySelector('input[type="number"]');
+  const cantidad = Number(cantidadInput.value) || 1;
+
+  const subtotal = precio * cantidad;
+  const subtotalElement = listItem.querySelector(".subtotal");
+  subtotalElement.textContent = `Subtotal: $${formatearMoneda(subtotal)}`;
+}
+
+function crearItemSeleccionado(nombre, precio, cantidad) {
+  const listItem = document.createElement("li");
+  listItem.dataset.nombre = nombre;
+  listItem.dataset.precio = String(precio);
+
+  const nombreSpan = document.createElement("span");
+  nombreSpan.className = "nombre-item";
+  nombreSpan.textContent = `${nombre} - Precio unitario: $${formatearMoneda(precio)} `;
+
+  const cantidadLabel = document.createElement("span");
+  cantidadLabel.textContent = "Cantidad: ";
+
+  const cantidadInput = document.createElement("input");
+  cantidadInput.type = "number";
+  cantidadInput.min = "1";
+  cantidadInput.value = cantidad;
+
+  const subtotalSpan = document.createElement("span");
+  subtotalSpan.className = "subtotal";
+
+  cantidadInput.addEventListener("change", (event) => {
+    const nuevaCantidad = parseInt(event.target.value, 10);
+
+    if (!isNaN(nuevaCantidad) && nuevaCantidad >= 1) {
+      actualizarSubtotalItem(listItem);
+      actualizarCostoTotal();
+      actualizarLocalStorage();
+    } else {
+      alert("Ingrese una cantidad válida (mayor o igual a 1).");
+      event.target.value = "1";
+      actualizarSubtotalItem(listItem);
+      actualizarCostoTotal();
+      actualizarLocalStorage();
+    }
+  });
+
+  listItem.appendChild(nombreSpan);
+  listItem.appendChild(cantidadLabel);
+  listItem.appendChild(cantidadInput);
+  listItem.appendChild(document.createTextNode(" - "));
+  listItem.appendChild(subtotalSpan);
+
+  actualizarSubtotalItem(listItem);
+
+  return listItem;
+}
+
 function agregarAListaSeleccionados(nombre, precio, cantidad, listaSeleccionadosElement) {
-  // Buscar si ya existe un elemento con el mismo nombre en la lista
+  let listItem = Array.from(listaSeleccionadosElement.children).find(
+    (element) => element.dataset.nombre === nombre
+  );
+
+  if (listItem) {
+    listItem.dataset.precio = String(precio);
+    const cantidadInput = listItem.querySelector('input[type="number"]');
+    cantidadInput.value = cantidad;
+    actualizarSubtotalItem(listItem);
+  } else {
+    listItem = crearItemSeleccionado(nombre, precio, cantidad);
+    listaSeleccionadosElement.appendChild(listItem);
+  }
+
+  actualizarCostoTotal();
+  actualizarLocalStorage();
+}
+
+function eliminarDeListaSeleccionados(nombre) {
+  const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+
   const listItem = Array.from(listaSeleccionadosElement.children).find(
     (element) => element.dataset.nombre === nombre
   );
 
   if (listItem) {
-    // Si ya existe, actualizar la cantidad y el subtotal
-    const cantidadInput = listItem.querySelector("input");
-    cantidadInput.value = cantidad;
-    listItem.textContent = `${nombre} - Cantidad: ${cantidad} - Subtotal: $${cantidad * precio}`;
-  } else {
-    // Si no existe, crear un nuevo elemento
-    const newItem = document.createElement("li");
-    newItem.dataset.nombre = nombre;
-
-    const cantidadInput = document.createElement("input");
-    cantidadInput.type = "number";
-    cantidadInput.value = cantidad;
-    cantidadInput.min = "1";
-    cantidadInput.addEventListener("change", (event) => {
-      const nuevaCantidad = parseInt(event.target.value);
-      if (!isNaN(nuevaCantidad) && nuevaCantidad >= 1) {
-        cantidad = nuevaCantidad;
-        newItem.textContent = `${nombre} - Cantidad: ${cantidad} - Subtotal: $${cantidad * precio}`;
-      } else {
-        alert("Ingrese una cantidad válida (mayor o igual a 1).");
-        cantidadInput.value = cantidad;
-      }
-    });
-
-    newItem.textContent = `${nombre} - Cantidad: ${cantidad} - Subtotal: $${cantidad * precio}`;
-    newItem.appendChild(cantidadInput);
-
-    listaSeleccionadosElement.appendChild(newItem);
+    listItem.remove();
+    actualizarCostoTotal();
+    actualizarLocalStorage();
   }
 }
 
+function actualizarCostoTotal() {
+  let subtotalSeleccionados = 0;
+
+  const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+
+  for (const listItem of listaSeleccionadosElement.children) {
+    const precio = Number(listItem.dataset.precio);
+    const cantidadInput = listItem.querySelector('input[type="number"]');
+    const cantidad = Number(cantidadInput.value) || 1;
+
+    subtotalSeleccionados += precio * cantidad;
+  }
+
+  const montoIva = subtotalSeleccionados * IVA;
+  const costoTotal = subtotalSeleccionados + montoIva;
+
+  const ivaElement = document.getElementById("iva");
+  const resultadoElement = document.getElementById("resultado");
+
+  ivaElement.textContent = `IVA 19%: $${formatearMoneda(montoIva)}`;
+  resultadoElement.textContent = `El costo total (con IVA) es: $${formatearMoneda(costoTotal)}`;
+}
+
+function crearCheckbox(item, grupo, listaElement, listaSeleccionadosElement) {
+  const contenedor = document.createElement("div");
+
+  const input = document.createElement("input");
+  input.type = "checkbox";
+  input.id = `${grupo}-${item.nombre.replace(/\s+/g, "-").toLowerCase()}`;
+  input.dataset.nombre = item.nombre;
+  input.dataset.precio = String(item.precio);
+
+  const label = document.createElement("label");
+  label.htmlFor = input.id;
+  label.textContent = `${item.nombre} - $${formatearMoneda(item.precio)}`;
+
+  input.addEventListener("change", () => {
+    if (input.checked) {
+      agregarAListaSeleccionados(item.nombre, item.precio, 1, listaSeleccionadosElement);
+    } else {
+      eliminarDeListaSeleccionados(item.nombre);
+    }
+  });
+
+  contenedor.appendChild(input);
+  contenedor.appendChild(label);
+  listaElement.appendChild(contenedor);
+}
 
 function mostrarProductosServicios() {
   const listaProductosElement = document.getElementById("listaProductos");
   const listaServiciosElement = document.getElementById("listaServicios");
+  const listaConceptosElement = document.getElementById("listaConceptos");
   const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
 
-  function handleChange(input, producto) {
-    const seleccionElement = document.getElementById(`seleccion-${input.id}`);
-    if (input.checked) {
-      if (!seleccionElement) {
-        agregarAListaSeleccionados(producto.nombre, producto.precio, 1, listaSeleccionadosElement);
-      }
-    } else {
-      if (seleccionElement) {
-        listaSeleccionadosElement.removeChild(seleccionElement);
-      }
-    }
+  if (listaProductosElement) {
+    productos.forEach((producto) => {
+      crearCheckbox(producto, "productos", listaProductosElement, listaSeleccionadosElement);
+    });
   }
 
-  function agregarCheckbox(label, producto, listaElement) {
-    const input = document.createElement("input");
-    input.type = "checkbox";
-    input.name = label;
-    input.value = `${label}-${producto.nombre}`;
-    input.id = `${label}-${producto.nombre}`;
-
-    const checkboxLabel = document.createElement("label");
-    checkboxLabel.textContent = `${producto.nombre} - $${producto.precio}`;
-    checkboxLabel.htmlFor = input.id;
-
-    input.addEventListener("change", () => handleChange(input, producto));
-
-    listaElement.appendChild(input);
-    listaElement.appendChild(checkboxLabel);
+  if (listaServiciosElement) {
+    servicios.forEach((servicio) => {
+      crearCheckbox(servicio, "servicios", listaServiciosElement, listaSeleccionadosElement);
+    });
   }
 
-  productos.forEach((producto, index) => {
-    agregarCheckbox("productos", producto, listaProductosElement);
-  });
+  if (listaConceptosElement) {
+    conceptoTramites.forEach((concepto) => {
+      crearCheckbox(concepto, "conceptos", listaConceptosElement, listaSeleccionadosElement);
+    });
+  }
+}
 
-  servicios.forEach((servicio, index) => {
-    agregarCheckbox("servicios", servicio, listaServiciosElement);
+function mostrarSweetAlert() {
+  return new Promise((resolve, reject) => {
+    Swal.fire({
+      title: "¿Desea calcular el costo?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Calcular",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        resolve(true);
+      } else {
+        reject(false);
+      }
+    });
   });
 }
 
 function calcularCosto() {
-  const iva = 0.19;
+  mostrarSweetAlert()
+    .then(() => {
+      actualizarCostoTotal();
 
-  let costoTotal = 0;
-  let subtotalSeleccionados = 0;
-
-  const resultadoElement = document.getElementById("resultado");
-  const ivaElement = document.getElementById("iva");
-  const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
-
-  // Recorrer los elementos en listaSeleccionadosElement
-  for (const listItem of listaSeleccionadosElement.children) {
-    const cantidadInput = listItem.querySelector('input[type="number"]');
-    const cantidad = parseInt(cantidadInput.value);
-    const precioTexto = listItem.textContent.match(/\$([\d,]+)/);
-    const precio = parseFloat(precioTexto[1].replace(",", ""));
-
-    // Calcular el subtotal para cada elemento y sumarlo al subtotal total
-    subtotalSeleccionados += cantidad * precio;
-  }
-
-  // Calcular el costo total con IVA
-  costoTotal = subtotalSeleccionados + subtotalSeleccionados * iva;
-
-  // Actualizar el elemento HTML con los resultados
-  ivaElement.innerHTML = `IVA 19%: $${subtotalSeleccionados * iva}`;
-  resultadoElement.innerHTML = `El costo total (con IVA) es: $${costoTotal}`;
+      Toastify({
+        text: "¡Cálculo completado!",
+        duration: 3000,
+        close: true,
+        gravity: "top",
+        position: "right",
+        stopOnFocus: true,
+      }).showToast();
+    })
+    .catch(() => {
+      console.log("Operación cancelada");
+    });
 }
 
+function actualizarLocalStorage() {
+  const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+  const seleccionados = {};
 
-document.addEventListener("DOMContentLoaded", function () {
-  mostrarProductosServicios();
-  const calcularButton = document.createElement("button");
-  calcularButton.textContent = "Calcular Costo";
+  for (const listItem of listaSeleccionadosElement.children) {
+    const nombre = listItem.dataset.nombre;
+    const precio = Number(listItem.dataset.precio);
+    const cantidad = Number(listItem.querySelector('input[type="number"]').value) || 1;
 
-  calcularButton.addEventListener("click", calcularCosto);
+    seleccionados[nombre] = {
+      precio,
+      cantidad,
+    };
+  }
 
-  document.body.appendChild(calcularButton);
-});
+  localStorage.setItem("seleccionados", JSON.stringify(seleccionados));
+}
+
+function obtenerSeleccionadosDesdeLocalStorage() {
+  const seleccionadosString = localStorage.getItem("seleccionados");
+  return seleccionadosString ? JSON.parse(seleccionadosString) : {};
+}
 
 function actualizarListaSeleccionados(seleccionados, listaSeleccionadosElement) {
   listaSeleccionadosElement.innerHTML = "";
 
-  for (const nombre in seleccionados) {
-    if (seleccionados.hasOwnProperty(nombre)) {
-      const seleccion = seleccionados[nombre];
-      agregarAListaSeleccionados(nombre, seleccion.precio, seleccion.cantidad, listaSeleccionadosElement);
-    }
-  }
+  Object.keys(seleccionados).forEach((nombre) => {
+    const seleccion = seleccionados[nombre];
+    agregarAListaSeleccionados(nombre, seleccion.precio, seleccion.cantidad, listaSeleccionadosElement);
+  });
 }
+
+function sincronizarCheckboxes(seleccionados) {
+  const checkboxes = document.querySelectorAll('input[type="checkbox"][data-nombre]');
+
+  checkboxes.forEach((checkbox) => {
+    checkbox.checked = Boolean(seleccionados[checkbox.dataset.nombre]);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  mostrarProductosServicios();
+
+  const seleccionados = obtenerSeleccionadosDesdeLocalStorage();
+  const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+
+  actualizarListaSeleccionados(seleccionados, listaSeleccionadosElement);
+  sincronizarCheckboxes(seleccionados);
+  actualizarCostoTotal();
+
+  let calcularButton = document.getElementById("calcularCostoBtn");
+
+  if (!calcularButton) {
+    calcularButton = document.createElement("button");
+    calcularButton.id = "calcularCostoBtn";
+    calcularButton.textContent = "Calcular Costo";
+    document.body.appendChild(calcularButton);
+  }
+
+  calcularButton.addEventListener("click", calcularCosto);
+});
