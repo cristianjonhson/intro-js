@@ -1,90 +1,284 @@
-function calcularCosto() {
-    const productos = [{
-            nombre: "Producto 1",
-            precio: 10000
-        },
-        {
-            nombre: "Producto 2",
-            precio: 20000
-        },
-        {
-            nombre: "Producto 3",
-            precio: 15000
-        },
-    ];
+const productos = [
+  { nombre: "Producto 1", precio: 10000 },
+  { nombre: "Producto 2", precio: 20000 },
+  { nombre: "Producto 3", precio: 15000 },
+];
 
-    const servicios = [{
-            nombre: "Servicio 1",
-            precio: 30000
-        },
-        {
-            nombre: "Servicio 2",
-            precio: 25000
-        },
-    ];
+const servicios = [
+  { nombre: "Servicio 1", precio: 30000 },
+  { nombre: "Servicio 2", precio: 25000 },
+];
 
-    const iva = 0.19;
+const conceptoTramites = [
+  { nombre: "Concepto 1", precio: 5000 },
+  { nombre: "Concepto 2", precio: 8000 },
+];
 
-    const conceptoTramites = [
-        // Puedes agregar elementos de concepto tramites aquí
-        {
-            nombre: "Concepto 1",
-            precio: 5000
-        },
-        {
-            nombre: "Concepto 2",
-            precio: 8000
-        },
-    ];
+const IVA = 0.19;
 
-    while (true) {
-        const seleccionInput = prompt(
-            "Seleccione un producto, servicio o concepto de tramites:\n" +
-            productos.map((producto, index) => `${index + 1} - ${producto.nombre} ($${producto.precio})`).join("\n") +
-            "\n" +
-            servicios.map((servicio, index) => `${productos.length + index + 1} - ${servicio.nombre} ($${servicio.precio})`).join("\n") +
-            (conceptoTramites.length > 0 ?
-                "\nConceptos de Tramites:\n" +
-                conceptoTramites.map((concepto, index) => `${productos.length + servicios.length + index + 1} - ${concepto.nombre} ($${concepto.precio})`).join("\n") :
-                "") +
-            "\nPara salir, escriba 'salir'"
-        );
-
-        const seleccion = seleccionInput.trim().replace(/\D/g, '');
-
-        if (seleccion.toLowerCase() === "salir") {
-            alert("Gracias por usar el simulador.");
-            break;
-        }
-
-        const cantidadInput = prompt("Ingrese la cantidad:");
-        // Usar el método replace para eliminar caracteres no numéricos y el trim para eliminar espacios en blancos
-        const cantidad = parseInt(cantidadInput.trim().replace(/\D/g, ''));
-
-        if (!isNaN(cantidad)) {
-            let costoTotal = 0;
-            const opcion = parseInt(seleccion);
-
-            if (!isNaN(opcion) && opcion >= 1 && opcion <= productos.length + servicios.length + conceptoTramites.length) {
-                if (opcion <= productos.length) {
-                    const precioSinIva = productos[opcion - 1].precio;
-                    costoTotal = (precioSinIva + precioSinIva * iva) * cantidad;
-                } else if (opcion <= productos.length + servicios.length) {
-                    const precioSinIva = servicios[opcion - productos.length - 1].precio;
-                    costoTotal = (precioSinIva + precioSinIva * iva) * cantidad;
-                } else {
-                    // Si la opción seleccionada está en el array de concepto de tramites
-                    const conceptoTramite = conceptoTramites[opcion - productos.length - servicios.length - 1];
-                    costoTotal = (conceptoTramite.precio + conceptoTramite.precio * iva) * cantidad;
-                }
-                alert(`El costo total (con IVA) es: $${costoTotal}`);
-            } else {
-                alert("Opción no válida. Ingrese un número válido.");
-            }
-        } else {
-            alert("Cantidad no válida. Ingrese un número válido.");
-        }
-    }
+function formatearMoneda(valor) {
+  return Number(valor).toLocaleString("es-CL");
 }
 
-calcularCosto(); // Llamada automática al cargar la página
+function actualizarSubtotalItem(listItem) {
+  const precio = Number(listItem.dataset.precio);
+  const cantidadInput = listItem.querySelector('input[type="number"]');
+  const cantidad = Number(cantidadInput.value) || 1;
+
+  const subtotal = precio * cantidad;
+  const subtotalElement = listItem.querySelector(".subtotal");
+  subtotalElement.textContent = `Subtotal: $${formatearMoneda(subtotal)}`;
+}
+
+function crearItemSeleccionado(nombre, precio, cantidad) {
+  const listItem = document.createElement("li");
+  listItem.dataset.nombre = nombre;
+  listItem.dataset.precio = String(precio);
+
+  const nombreSpan = document.createElement("span");
+  nombreSpan.className = "nombre-item";
+  nombreSpan.textContent = `${nombre} - Precio unitario: $${formatearMoneda(precio)} `;
+
+  const cantidadLabel = document.createElement("span");
+  cantidadLabel.textContent = "Cantidad: ";
+
+  const cantidadInput = document.createElement("input");
+  cantidadInput.type = "number";
+  cantidadInput.min = "1";
+  cantidadInput.value = cantidad;
+
+  const subtotalSpan = document.createElement("span");
+  subtotalSpan.className = "subtotal";
+
+  cantidadInput.addEventListener("change", (event) => {
+    const nuevaCantidad = parseInt(event.target.value, 10);
+
+    if (!isNaN(nuevaCantidad) && nuevaCantidad >= 1) {
+      actualizarSubtotalItem(listItem);
+      actualizarCostoTotal();
+      actualizarLocalStorage();
+    } else {
+      alert("Ingrese una cantidad válida (mayor o igual a 1).");
+      event.target.value = "1";
+      actualizarSubtotalItem(listItem);
+      actualizarCostoTotal();
+      actualizarLocalStorage();
+    }
+  });
+
+  listItem.appendChild(nombreSpan);
+  listItem.appendChild(cantidadLabel);
+  listItem.appendChild(cantidadInput);
+  listItem.appendChild(document.createTextNode(" - "));
+  listItem.appendChild(subtotalSpan);
+
+  actualizarSubtotalItem(listItem);
+
+  return listItem;
+}
+
+function agregarAListaSeleccionados(nombre, precio, cantidad, listaSeleccionadosElement) {
+  let listItem = Array.from(listaSeleccionadosElement.children).find(
+    (element) => element.dataset.nombre === nombre
+  );
+
+  if (listItem) {
+    listItem.dataset.precio = String(precio);
+    const cantidadInput = listItem.querySelector('input[type="number"]');
+    cantidadInput.value = cantidad;
+    actualizarSubtotalItem(listItem);
+  } else {
+    listItem = crearItemSeleccionado(nombre, precio, cantidad);
+    listaSeleccionadosElement.appendChild(listItem);
+  }
+
+  actualizarCostoTotal();
+  actualizarLocalStorage();
+}
+
+function eliminarDeListaSeleccionados(nombre) {
+  const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+
+  const listItem = Array.from(listaSeleccionadosElement.children).find(
+    (element) => element.dataset.nombre === nombre
+  );
+
+  if (listItem) {
+    listItem.remove();
+    actualizarCostoTotal();
+    actualizarLocalStorage();
+  }
+}
+
+function actualizarCostoTotal() {
+  let subtotalSeleccionados = 0;
+
+  const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+
+  for (const listItem of listaSeleccionadosElement.children) {
+    const precio = Number(listItem.dataset.precio);
+    const cantidadInput = listItem.querySelector('input[type="number"]');
+    const cantidad = Number(cantidadInput.value) || 1;
+
+    subtotalSeleccionados += precio * cantidad;
+  }
+
+  const montoIva = subtotalSeleccionados * IVA;
+  const costoTotal = subtotalSeleccionados + montoIva;
+
+  const ivaElement = document.getElementById("iva");
+  const resultadoElement = document.getElementById("resultado");
+
+  ivaElement.textContent = `IVA 19%: $${formatearMoneda(montoIva)}`;
+  resultadoElement.textContent = `El costo total (con IVA) es: $${formatearMoneda(costoTotal)}`;
+}
+
+function crearCheckbox(item, grupo, listaElement, listaSeleccionadosElement) {
+  const contenedor = document.createElement("div");
+
+  const input = document.createElement("input");
+  input.type = "checkbox";
+  input.id = `${grupo}-${item.nombre.replace(/\s+/g, "-").toLowerCase()}`;
+  input.dataset.nombre = item.nombre;
+  input.dataset.precio = String(item.precio);
+
+  const label = document.createElement("label");
+  label.htmlFor = input.id;
+  label.textContent = `${item.nombre} - $${formatearMoneda(item.precio)}`;
+
+  input.addEventListener("change", () => {
+    if (input.checked) {
+      agregarAListaSeleccionados(item.nombre, item.precio, 1, listaSeleccionadosElement);
+    } else {
+      eliminarDeListaSeleccionados(item.nombre);
+    }
+  });
+
+  contenedor.appendChild(input);
+  contenedor.appendChild(label);
+  listaElement.appendChild(contenedor);
+}
+
+function mostrarProductosServicios() {
+  const listaProductosElement = document.getElementById("listaProductos");
+  const listaServiciosElement = document.getElementById("listaServicios");
+  const listaConceptosElement = document.getElementById("listaConceptos");
+  const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+
+  if (listaProductosElement) {
+    productos.forEach((producto) => {
+      crearCheckbox(producto, "productos", listaProductosElement, listaSeleccionadosElement);
+    });
+  }
+
+  if (listaServiciosElement) {
+    servicios.forEach((servicio) => {
+      crearCheckbox(servicio, "servicios", listaServiciosElement, listaSeleccionadosElement);
+    });
+  }
+
+  if (listaConceptosElement) {
+    conceptoTramites.forEach((concepto) => {
+      crearCheckbox(concepto, "conceptos", listaConceptosElement, listaSeleccionadosElement);
+    });
+  }
+}
+
+function mostrarSweetAlert() {
+  return new Promise((resolve, reject) => {
+    Swal.fire({
+      title: "¿Desea calcular el costo?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Calcular",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        resolve(true);
+      } else {
+        reject(false);
+      }
+    });
+  });
+}
+
+function calcularCosto() {
+  mostrarSweetAlert()
+    .then(() => {
+      actualizarCostoTotal();
+
+      Toastify({
+        text: "¡Cálculo completado!",
+        duration: 3000,
+        close: true,
+        gravity: "top",
+        position: "right",
+        stopOnFocus: true,
+      }).showToast();
+    })
+    .catch(() => {
+      console.log("Operación cancelada");
+    });
+}
+
+function actualizarLocalStorage() {
+  const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+  const seleccionados = {};
+
+  for (const listItem of listaSeleccionadosElement.children) {
+    const nombre = listItem.dataset.nombre;
+    const precio = Number(listItem.dataset.precio);
+    const cantidad = Number(listItem.querySelector('input[type="number"]').value) || 1;
+
+    seleccionados[nombre] = {
+      precio,
+      cantidad,
+    };
+  }
+
+  localStorage.setItem("seleccionados", JSON.stringify(seleccionados));
+}
+
+function obtenerSeleccionadosDesdeLocalStorage() {
+  const seleccionadosString = localStorage.getItem("seleccionados");
+  return seleccionadosString ? JSON.parse(seleccionadosString) : {};
+}
+
+function actualizarListaSeleccionados(seleccionados, listaSeleccionadosElement) {
+  listaSeleccionadosElement.innerHTML = "";
+
+  Object.keys(seleccionados).forEach((nombre) => {
+    const seleccion = seleccionados[nombre];
+    agregarAListaSeleccionados(nombre, seleccion.precio, seleccion.cantidad, listaSeleccionadosElement);
+  });
+}
+
+function sincronizarCheckboxes(seleccionados) {
+  const checkboxes = document.querySelectorAll('input[type="checkbox"][data-nombre]');
+
+  checkboxes.forEach((checkbox) => {
+    checkbox.checked = Boolean(seleccionados[checkbox.dataset.nombre]);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  mostrarProductosServicios();
+
+  const seleccionados = obtenerSeleccionadosDesdeLocalStorage();
+  const listaSeleccionadosElement = document.getElementById("listaSeleccionados");
+
+  actualizarListaSeleccionados(seleccionados, listaSeleccionadosElement);
+  sincronizarCheckboxes(seleccionados);
+  actualizarCostoTotal();
+
+  let calcularButton = document.getElementById("calcularCostoBtn");
+
+  if (!calcularButton) {
+    calcularButton = document.createElement("button");
+    calcularButton.id = "calcularCostoBtn";
+    calcularButton.textContent = "Calcular Costo";
+    document.body.appendChild(calcularButton);
+  }
+
+  calcularButton.addEventListener("click", calcularCosto);
+});
