@@ -287,7 +287,14 @@ function inicializarApp() {
     calcularButton = document.createElement("button");
     calcularButton.id = "calcularCostoBtn";
     calcularButton.textContent = "Calcular Costo";
-    document.body.appendChild(calcularButton);
+    calcularButton.type = "button";
+    const totalCard = document.querySelector(".total-card");
+
+    if (totalCard) {
+      totalCard.insertBefore(calcularButton, totalCard.firstChild.nextSibling);
+    } else {
+      document.body.appendChild(calcularButton);
+    }
   }
 
   calcularButton.addEventListener("click", calcularCosto);

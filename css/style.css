@@ -176,6 +176,24 @@ label {
     linear-gradient(120deg, rgba(255, 255, 255, 0.86), rgba(255, 250, 244, 0.78));
 }
 
+.action-button {
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(120deg, var(--accent), var(--accent-soft));
+  color: #ffffff;
+  font-weight: 700;
+  padding: 0.65rem 1rem;
+  margin-bottom: 0.6rem;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(216, 86, 42, 0.22);
+  transition: transform 160ms ease, filter 160ms ease;
+}
+
+.action-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
 #iva,
 #resultado {
   margin: 0.36rem 0;
