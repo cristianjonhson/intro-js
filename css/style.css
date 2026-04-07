@@ -127,6 +127,31 @@ ul {
   color: var(--muted);
 }
 
+#listaProductos>div,
+#listaServicios>div,
+#listaConceptos>div {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.5rem;
+}
+
+#listaProductos>div input,
+#listaServicios>div input,
+#listaConceptos>div input {
+  margin: 0;
+}
+
+#listaProductos>div label,
+#listaServicios>div label,
+#listaConceptos>div label {
+  border: 1px solid rgba(216, 86, 42, 0.22);
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 10px;
+  min-height: auto;
+  padding: 0.4rem 0.6rem;
+}
+
 .labels-grid {
   margin-top: 0.6rem;
   display: grid;
